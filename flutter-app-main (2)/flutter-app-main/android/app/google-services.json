@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "750658048501",
+    "project_id": "mirakit-a2f67",
+    "storage_bucket": "mirakit-a2f67.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:750658048501:android:5f61dbb22b7a5ba53850bc",
+        "android_client_info": {
+          "package_name": "com.leematata.mirakitproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALUhuAhd2TDZieVOaQl4LpdEdItVgVc_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,55 @@
+plugins {
+    id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.leematata.mirakitproject"
+    compileSdk = 34
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        applicationId = "com.leematata.mirakitproject"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+        
+        // Required when setting minSdkVersion to 20 or lower
+        multiDexEnabled = true
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug  // release 빌드에 디버그 서명 설정
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+dependencies {
+    // For AGP 7.4+ (Android Gradle Plugin)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    // For AGP 7.3
+    // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.3")
+    // For AGP 4.0 to 7.2
+    // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.9")
+}

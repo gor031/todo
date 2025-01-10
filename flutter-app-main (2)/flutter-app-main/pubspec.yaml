@@ -1,0 +1,34 @@
+name: mirakitproject
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  cached_network_image: ^3.4.1
+  firebase_core: ^3.9.0
+  firebase_messaging: ^15.1.6
+  flutter:
+    sdk: flutter
+  flutter_dotenv: ^5.2.1
+  
+  flutter_local_notifications: ^18.0.1
+
+  http: ^1.2.2
+  kakao_flutter_sdk_user: ^1.9.6
+  provider: ^6.1.2
+  share_plus: ^10.1.3
+  supabase_flutter: ^2.8.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/kakao_login_medium_wide.png
