@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/saju/saju_calculator_service.dart';
+import '../../services/saju/lunar_calendar_service.dart';
 import 'saju_result_screen.dart';
 
 /// 사주 입력 화면
@@ -18,6 +19,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   bool _isMale = true;
   bool _isLoading = false;
+  bool _isLunar = false; // 음력 여부
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +55,85 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
               ),
               const SizedBox(height: 32),
 
+              // 음력/양력 선택
+              Card(
+                elevation: 2,
+                color: Colors.blue[50],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      const Text(
+                        '달력 종류',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isLunar = false;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: !_isLunar ? Colors.blue : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 2,
+                            ),
+                          ),
+                          child: Text(
+                            '양력',
+                            style: TextStyle(
+                              color: !_isLunar ? Colors.white : Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isLunar = true;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _isLunar ? Colors.blue : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 2,
+                            ),
+                          ),
+                          child: Text(
+                            '음력',
+                            style: TextStyle(
+                              color: _isLunar ? Colors.white : Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
               // 생년월일 선택
               Card(
                 elevation: 2,
@@ -61,9 +142,9 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        '생년월일 (양력)',
-                        style: TextStyle(
+                      Text(
+                        '생년월일 (${_isLunar ? "음력" : "양력"})',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -285,14 +366,42 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
       });
 
       try {
-        // 날짜와 시간 합치기
-        final birthDateTime = DateTime(
-          _selectedDate.year,
-          _selectedDate.month,
-          _selectedDate.day,
-          _selectedTime.hour,
-          _selectedTime.minute,
-        );
+        DateTime birthDateTime;
+
+        // 음력이면 양력으로 변환
+        if (_isLunar) {
+          try {
+            birthDateTime = LunarCalendarService.lunarToSolar(
+              year: _selectedDate.year,
+              month: _selectedDate.month,
+              day: _selectedDate.day,
+            );
+            // 시간 추가
+            birthDateTime = DateTime(
+              birthDateTime.year,
+              birthDateTime.month,
+              birthDateTime.day,
+              _selectedTime.hour,
+              _selectedTime.minute,
+            );
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('음력 날짜 변환 중 오류가 발생했습니다')),
+              );
+            }
+            return;
+          }
+        } else {
+          // 양력: 날짜와 시간 합치기
+          birthDateTime = DateTime(
+            _selectedDate.year,
+            _selectedDate.month,
+            _selectedDate.day,
+            _selectedTime.hour,
+            _selectedTime.minute,
+          );
+        }
 
         // 사주 계산
         final saju = await _sajuCalculator.calculateSaju(
@@ -315,7 +424,7 @@ class _SajuInputScreenState extends State<SajuInputScreen> {
             SnackBar(content: Text('사주 계산 중 오류가 발생했습니다: $e')),
           );
         }
-      } finally {
+      } finally{
         if (mounted) {
           setState(() {
             _isLoading = false;

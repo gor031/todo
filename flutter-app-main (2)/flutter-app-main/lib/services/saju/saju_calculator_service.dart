@@ -1,6 +1,7 @@
 import '../../models/saju/saju.dart';
 import '../../models/saju/pillar.dart';
 import '../../constants/saju/saju_constants.dart';
+import 'solar_term_service.dart';
 
 /// 사주 계산 서비스
 class SajuCalculatorService {
@@ -46,14 +47,28 @@ class SajuCalculatorService {
 
   /// 년주 계산 (입춘 기준)
   Pillar _calculateYearPillar(DateTime date) {
-    // 입춘은 대략 2월 4일경
-    // 입춘 이전이면 전년도의 간지를 사용
     int year = date.year;
 
-    // 간단한 입춘 판정 (2월 4일 기준)
-    // TODO: 정확한 절기 시각 데이터 필요
-    if (date.month == 1 || (date.month == 2 && date.day < 4)) {
-      year = year - 1;
+    try {
+      // 정확한 입춘 시각 가져오기
+      final ipchun = SolarTermService.getIpchun(year);
+
+      if (ipchun != null) {
+        // 입춘 이전이면 전년도의 간지를 사용
+        if (date.isBefore(ipchun)) {
+          year = year - 1;
+        }
+      } else {
+        // 절기 데이터가 없으면 간단한 판정 (2월 4일 기준)
+        if (date.month == 1 || (date.month == 2 && date.day < 4)) {
+          year = year - 1;
+        }
+      }
+    } catch (e) {
+      // 에러 시 간단한 판정
+      if (date.month == 1 || (date.month == 2 && date.day < 4)) {
+        year = year - 1;
+      }
     }
 
     // 기준년도 1984년(갑자년)부터 계산
@@ -67,15 +82,28 @@ class SajuCalculatorService {
 
   /// 월주 계산 (절기 기준)
   Pillar _calculateMonthPillar(DateTime date) {
-    // 월주는 절기 기준으로 결정됨
-    // 입춘(1월), 경칩(2월), 청명(3월), 입하(4월), 망종(5월), 소서(6월)
-    // 입추(7월), 백로(8월), 한로(9월), 입동(10월), 대설(11월), 소한(12월)
+    int monthIndex = 0;
 
-    // 간단한 구현: 절기를 각 월 초로 근사
-    // TODO: 정확한 절기 시각 데이터 필요
-    int monthIndex = date.month - 1;
-    if (date.day < 6) { // 절기가 대략 6일경
-      monthIndex = (monthIndex - 1 + 12) % 12;
+    try {
+      // 현재 날짜가 속한 월의 절기 가져오기
+      final currentTerm = SolarTermService.getMonthSolarTerm(date);
+
+      if (currentTerm != null) {
+        // 절기 인덱스로 월 인덱스 결정
+        monthIndex = SolarTermService.getMonthSolarTermIndex(currentTerm.name);
+      } else {
+        // 절기 데이터가 없으면 간단한 계산
+        monthIndex = date.month - 1;
+        if (date.day < 6) {
+          monthIndex = (monthIndex - 1 + 12) % 12;
+        }
+      }
+    } catch (e) {
+      // 에러 시 간단한 계산
+      monthIndex = date.month - 1;
+      if (date.day < 6) {
+        monthIndex = (monthIndex - 1 + 12) % 12;
+      }
     }
 
     // 기준: 1901년 1월 = 기축
