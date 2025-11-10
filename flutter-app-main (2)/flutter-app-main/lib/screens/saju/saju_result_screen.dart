@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/saju/saju.dart';
+import '../../services/saju/sipseong_service.dart';
+import '../../services/saju/sinsal_service.dart';
 
 /// 사주 결과 화면
 class SajuResultScreen extends StatelessWidget {
@@ -32,6 +34,14 @@ class SajuResultScreen extends StatelessWidget {
 
             // 오행 분석
             _buildOhaengCard(),
+            const SizedBox(height: 16),
+
+            // 십성 분석
+            _buildSipseongCard(),
+            const SizedBox(height: 16),
+
+            // 신살 분석
+            _buildSinsalCard(),
             const SizedBox(height: 16),
 
             // 대운
@@ -509,6 +519,280 @@ class SajuResultScreen extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  Widget _buildSipseongCard() {
+    // 십성 계산
+    final sipseongMap = SipseongService.calculateAllSipseong(
+      ilgan: saju.ilgan,
+      yearCheongan: saju.yearPillar.cheongan,
+      monthCheongan: saju.monthPillar.cheongan,
+      dayCheongan: saju.dayPillar.cheongan,
+      timeCheongan: saju.timePillar.cheongan,
+    );
+
+    final stats = SipseongService.calculateSipseongStats(sipseongMap);
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '십성 분석 (十星)',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              '일간을 기준으로 한 천간의 역할',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const Divider(height: 24),
+            Table(
+              border: TableBorder.all(color: Colors.black54, width: 1),
+              children: [
+                TableRow(
+                  decoration: BoxDecoration(color: Colors.purple[50]),
+                  children: const [
+                    _TableHeader('시간'),
+                    _TableHeader('일간'),
+                    _TableHeader('월간'),
+                    _TableHeader('년간'),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    _SipseongCell(
+                      cheongan: saju.timePillar.cheongan,
+                      sipseong: sipseongMap['시간']!.sipseong,
+                    ),
+                    _SipseongCell(
+                      cheongan: saju.dayPillar.cheongan,
+                      sipseong: '일간(나)',
+                      isIlgan: true,
+                    ),
+                    _SipseongCell(
+                      cheongan: saju.monthPillar.cheongan,
+                      sipseong: sipseongMap['월간']!.sipseong,
+                    ),
+                    _SipseongCell(
+                      cheongan: saju.yearPillar.cheongan,
+                      sipseong: sipseongMap['년간']!.sipseong,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: stats.entries.map((entry) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _getSipseongCategoryColor(entry.key),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '${entry.key}: ${entry.value}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSinsalCard() {
+    // 신살 계산
+    final sinsalList = SinsalService.calculateAllSinsal(
+      ilgan: saju.ilgan,
+      yearJiji: saju.yearPillar.jiji,
+      monthJiji: saju.monthPillar.jiji,
+      dayJiji: saju.dayPillar.jiji,
+      timeJiji: saju.timePillar.jiji,
+      dayGanzhi: saju.dayPillar.ganzhi,
+    );
+
+    final stats = SinsalService.calculateSinsalStats(sinsalList);
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '신살 분석 (神殺)',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '길신 ${stats['길신']}개, 흉신 ${stats['흉신']}개',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const Divider(height: 24),
+            if (sinsalList.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    '주요 신살이 없습니다',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              )
+            else
+              ...sinsalList.map((sinsal) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: sinsal.isGood ? Colors.green[50] : Colors.red[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: sinsal.isGood ? Colors.green : Colors.red,
+                      width: 2,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: sinsal.isGood ? Colors.green : Colors.red,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              sinsal.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              sinsal.position,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        sinsal.description,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getSipseongCategoryColor(String category) {
+    switch (category) {
+      case '비겁':
+        return Colors.green;
+      case '식상':
+        return Colors.orange;
+      case '재성':
+        return Colors.red;
+      case '관성':
+        return Colors.blue;
+      case '인성':
+        return Colors.purple;
+      default:
+        return Colors.grey;
+    }
+  }
+}
+
+class _SipseongCell extends StatelessWidget {
+  final String cheongan;
+  final String sipseong;
+  final bool isIlgan;
+
+  const _SipseongCell({
+    required this.cheongan,
+    required this.sipseong,
+    this.isIlgan = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 70,
+      color: isIlgan ? Colors.amber[100] : Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            cheongan,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            sipseong,
+            style: TextStyle(
+              fontSize: 12,
+              color: isIlgan ? Colors.brown : Colors.grey[700],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
