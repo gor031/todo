@@ -7,6 +7,7 @@ import 'login_screen.dart';
 import 'signup_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
+import 'saju/saju_input_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -77,6 +78,19 @@ class _MainScreenState extends State<MainScreen>
                     ),
                   ],
                 ),
+              ),
+              ListTile(
+                leading: Icon(Icons.auto_fix_high, color: Colors.brown[400]),
+                title: const Text('사주팔자'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SajuInputScreen(),
+                    ),
+                  );
+                },
               ),
               ListTile(
                 leading: Icon(Icons.person_add, color: Colors.brown[400]),
