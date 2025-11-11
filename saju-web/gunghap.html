@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>궁합 보기</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>💑 궁합 보기</h1>
+            <p>두 사람의 생년월일시를 입력하세요</p>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div id="inputContainer">
+            <!-- 첫 번째 사람 -->
+            <div class="card person-card" style="border: 3px solid #667eea;">
+                <div class="card-title" style="color: #667eea;">
+                    👤 첫 번째 사람
+                </div>
+
+                <form id="person1Form">
+                    <!-- 생년월일 -->
+                    <div class="form-group">
+                        <label class="form-label">생년월일</label>
+                        <input type="date" class="form-control" id="birthDate1" required>
+                    </div>
+
+                    <!-- 시간 -->
+                    <div class="form-group">
+                        <label class="form-label">태어난 시간</label>
+                        <input type="time" class="form-control" id="birthTime1" required>
+                    </div>
+
+                    <!-- 성별 -->
+                    <div class="form-group">
+                        <label class="form-label">성별</label>
+                        <div class="radio-group">
+                            <label class="radio-label male">
+                                <input type="radio" name="gender1" value="male" checked>
+                                <span>남자</span>
+                            </label>
+                            <label class="radio-label female">
+                                <input type="radio" name="gender1" value="female">
+                                <span>여자</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 두 번째 사람 -->
+            <div class="card person-card" style="border: 3px solid #f093fb;">
+                <div class="card-title" style="color: #f093fb;">
+                    👤 두 번째 사람
+                </div>
+
+                <form id="person2Form">
+                    <!-- 생년월일 -->
+                    <div class="form-group">
+                        <label class="form-label">생년월일</label>
+                        <input type="date" class="form-control" id="birthDate2" required>
+                    </div>
+
+                    <!-- 시간 -->
+                    <div class="form-group">
+                        <label class="form-label">태어난 시간</label>
+                        <input type="time" class="form-control" id="birthTime2" required>
+                    </div>
+
+                    <!-- 성별 -->
+                    <div class="form-group">
+                        <label class="form-label">성별</label>
+                        <div class="radio-group">
+                            <label class="radio-label male">
+                                <input type="radio" name="gender2" value="male">
+                                <span>남자</span>
+                            </label>
+                            <label class="radio-label female">
+                                <input type="radio" name="gender2" value="female" checked>
+                                <span>여자</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="card">
+                <button type="button" class="btn btn-primary" onclick="calculateGunghap()">
+                    궁합 보기
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='index.html'">
+                    돌아가기
+                </button>
+            </div>
+        </div>
+
+        <!-- 로딩 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 20px; color: white; font-size: 18px;">계산 중...</p>
+        </div>
+
+        <!-- 결과 카드 -->
+        <div id="resultContainer" class="hidden">
+            <!-- 총점 카드 -->
+            <div class="card" id="totalScoreCard">
+                <div class="card-title">
+                    🎯 궁합 점수
+                </div>
+                <div style="text-align: center; padding: 20px 0;">
+                    <div id="gradeDisplay" style="font-size: 72px; font-weight: bold; margin-bottom: 20px;"></div>
+                    <div id="totalScoreDisplay" style="font-size: 48px; font-weight: bold; color: #667eea; margin-bottom: 10px;"></div>
+                    <div id="summaryDisplay" style="font-size: 18px; color: #666; line-height: 1.6;"></div>
+                </div>
+            </div>
+
+            <!-- 첫 번째 사람 사주 -->
+            <div class="card">
+                <div class="card-title" style="color: #667eea;">
+                    👤 첫 번째 사람 사주
+                </div>
+                <p><strong>생년월일:</strong> <span id="person1BirthDate"></span></p>
+                <p><strong>성별:</strong> <span id="person1Gender"></span></p>
+                <p><strong>일간:</strong> <span id="person1Ilgan" style="font-size: 24px; color: #667eea;"></span></p>
+
+                <table class="saju-table" style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>시주</th>
+                            <th>일주</th>
+                            <th>월주</th>
+                            <th>년주</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="cheongan" id="person1TimeCheongan"></td>
+                            <td class="cheongan" id="person1DayCheongan"></td>
+                            <td class="cheongan" id="person1MonthCheongan"></td>
+                            <td class="cheongan" id="person1YearCheongan"></td>
+                        </tr>
+                        <tr>
+                            <td class="jiji" id="person1TimeJiji"></td>
+                            <td class="jiji" id="person1DayJiji"></td>
+                            <td class="jiji" id="person1MonthJiji"></td>
+                            <td class="jiji" id="person1YearJiji"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 두 번째 사람 사주 -->
+            <div class="card">
+                <div class="card-title" style="color: #f093fb;">
+                    👤 두 번째 사람 사주
+                </div>
+                <p><strong>생년월일:</strong> <span id="person2BirthDate"></span></p>
+                <p><strong>성별:</strong> <span id="person2Gender"></span></p>
+                <p><strong>일간:</strong> <span id="person2Ilgan" style="font-size: 24px; color: #f093fb;"></span></p>
+
+                <table class="saju-table" style="margin-top: 15px;">
+                    <thead>
+                        <tr>
+                            <th>시주</th>
+                            <th>일주</th>
+                            <th>월주</th>
+                            <th>년주</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="cheongan" id="person2TimeCheongan"></td>
+                            <td class="cheongan" id="person2DayCheongan"></td>
+                            <td class="cheongan" id="person2MonthCheongan"></td>
+                            <td class="cheongan" id="person2YearCheongan"></td>
+                        </tr>
+                        <tr>
+                            <td class="jiji" id="person2TimeJiji"></td>
+                            <td class="jiji" id="person2DayJiji"></td>
+                            <td class="jiji" id="person2MonthJiji"></td>
+                            <td class="jiji" id="person2YearJiji"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 카테고리별 점수 -->
+            <div class="card">
+                <div class="card-title">
+                    📊 카테고리별 점수
+                </div>
+                <div id="categoryScoresContainer"></div>
+            </div>
+
+            <!-- 긍정적 요소 -->
+            <div class="card">
+                <div class="card-title">
+                    ✅ 긍정적 요소
+                </div>
+                <ul id="positivePointsList" style="padding-left: 20px;"></ul>
+            </div>
+
+            <!-- 부정적 요소 -->
+            <div class="card">
+                <div class="card-title">
+                    ⚠️ 부정적 요소
+                </div>
+                <ul id="negativePointsList" style="padding-left: 20px;"></ul>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="card">
+                <button class="btn btn-primary" onclick="location.reload()">
+                    다시 보기
+                </button>
+                <button class="btn btn-secondary" onclick="location.href='index.html'">
+                    메인으로
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/saju-calculator.js"></script>
+    <script src="js/gunghap-calculator.js"></script>
+    <script src="js/gunghap-app.js"></script>
+</body>
+</html>
