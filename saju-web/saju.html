@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사주팔자 보기</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>🪄 사주팔자 보기</h1>
+            <p>생년월일시를 입력하세요</p>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div class="card" id="inputCard">
+            <div class="card-title">
+                📝 정보 입력
+            </div>
+
+            <form id="sajuForm">
+                <!-- 생년월일 -->
+                <div class="form-group">
+                    <label class="form-label">생년월일</label>
+                    <input type="date" class="form-control" id="birthDate" required>
+                </div>
+
+                <!-- 시간 -->
+                <div class="form-group">
+                    <label class="form-label">태어난 시간</label>
+                    <input type="time" class="form-control" id="birthTime" required>
+                </div>
+
+                <!-- 성별 -->
+                <div class="form-group">
+                    <label class="form-label">성별</label>
+                    <div class="radio-group">
+                        <label class="radio-label male">
+                            <input type="radio" name="gender" value="male" checked>
+                            <span>남자</span>
+                        </label>
+                        <label class="radio-label female">
+                            <input type="radio" name="gender" value="female">
+                            <span>여자</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">사주 보기</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='index.html'">
+                    돌아가기
+                </button>
+            </form>
+        </div>
+
+        <!-- 로딩 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 20px; color: white; font-size: 18px;">계산 중...</p>
+        </div>
+
+        <!-- 결과 카드 -->
+        <div id="resultContainer" class="hidden">
+            <!-- 기본 정보 -->
+            <div class="card">
+                <div class="card-title">
+                    ℹ️ 기본 정보
+                </div>
+                <p><strong>양력:</strong> <span id="resultBirthDate"></span></p>
+                <p><strong>성별:</strong> <span id="resultGender"></span></p>
+                <p><strong>일간:</strong> <span id="resultIlgan" style="font-size: 24px; color: #667eea;"></span></p>
+            </div>
+
+            <!-- 사주팔자 -->
+            <div class="card">
+                <div class="card-title">
+                    🎴 사주팔자 (四柱八字)
+                </div>
+                <table class="saju-table">
+                    <thead>
+                        <tr>
+                            <th>시주</th>
+                            <th>일주</th>
+                            <th>월주</th>
+                            <th>년주</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="cheongan" id="timeCheongan"></td>
+                            <td class="cheongan" id="dayCheongan"></td>
+                            <td class="cheongan" id="monthCheongan"></td>
+                            <td class="cheongan" id="yearCheongan"></td>
+                        </tr>
+                        <tr>
+                            <td class="jiji" id="timeJiji"></td>
+                            <td class="jiji" id="dayJiji"></td>
+                            <td class="jiji" id="monthJiji"></td>
+                            <td class="jiji" id="yearJiji"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 오행 분석 -->
+            <div class="card">
+                <div class="card-title">
+                    🌿 오행 분석 (五行)
+                </div>
+                <div id="ohaengContainer"></div>
+            </div>
+
+            <!-- 대운 -->
+            <div class="card">
+                <div class="card-title">
+                    🔄 대운 (大運)
+                </div>
+                <p style="color: #666; margin-bottom: 15px;">10년 단위의 운의 흐름</p>
+                <div class="un-container" id="daeunContainer"></div>
+            </div>
+
+            <!-- 세운 -->
+            <div class="card">
+                <div class="card-title">
+                    📅 세운 (歲運)
+                </div>
+                <p style="color: #666; margin-bottom: 15px;">매년의 운세</p>
+                <div class="un-container" id="seunContainer"></div>
+            </div>
+
+            <!-- 월운 -->
+            <div class="card">
+                <div class="card-title">
+                    🗓️ 월운 (月運)
+                </div>
+                <p style="color: #666; margin-bottom: 15px;">매월의 운세</p>
+                <div class="un-container" id="wolunContainer"></div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="card">
+                <button class="btn btn-primary" onclick="location.reload()">
+                    다시 보기
+                </button>
+                <button class="btn btn-secondary" onclick="location.href='index.html'">
+                    메인으로
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/saju-calculator.js"></script>
+    <script src="js/saju-app.js"></script>
+</body>
+</html>
